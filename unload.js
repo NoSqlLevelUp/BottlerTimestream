@@ -4,7 +4,7 @@ import {WriteRecordsCommand} from "@aws-sdk/client-timestream-write";
 import {constants} from "./constants.js";
 import {UnloadUtils} from "./utils/unload-utils.js";
 
-export class UnloadExample {
+export class Unload {
     constructor(writeClient, queryClient, timestreamDependencyHelper, csvFilePath, bucketName) {
         if (!csvFilePath) {
             console.error("CSV file path is required to run unload.")

@@ -487,6 +487,7 @@ export async function deleteTable(writeClient, databaseName, tableName) {
     await new Promise(resolve => setTimeout(resolve, 1000));
 }
 
+
 export function printRejectedRecordsException(err) {
     // Full log stack is printed in error print so let us print main message and the rejected records only
     console.log("Error writing records: RejectedRecordsException: One or more records have been rejected. See RejectedRecords for details.");

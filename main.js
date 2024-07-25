@@ -6,7 +6,7 @@ import * as queryExample from "./query.js";
 import * as csvIngest from "./insert-csv.js";
 import https from 'https';
 import minimist from 'minimist';
-import { UnloadExample } from "./unload.js";
+import { Unload } from "./unload.js";
 import { constants } from "./constants.js";
 import { config } from "dotenv";
 
@@ -60,7 +60,7 @@ async function createResources() {
     // await crudAndSimpleIngestionExample.describeDatabase(writeClient);
     // await crudAndSimpleIngestionExample.updateDatabase(argv.kmsKeyId, writeClient);
     await resources.listDatabases(writeClient);
-    // await resources.createTable(writeClient);
+    await resources.createTable(writeClient);
     // await crudAndSimpleIngestionExample.describeTable(writeClient);
     // await crudAndSimpleIngestionExample.updateTable(writeClient);
     await resources.listTables(writeClient);
@@ -76,17 +76,17 @@ async function callServices() {
 
     //Try cancelling a query
     //This could fail if there is no data in the table, and the example query has finished before it was cancelled.
-    await queryExample.tryCancelQuery(queryClient);
+    // await queryExample.tryCancelQuery(queryClient);
 
     // Try a query with multiple pages
-    await queryExample.tryQueryWithMultiplePages(queryClient, 20000);
+    // await queryExample.tryQueryWithMultiplePages(queryClient, 20000);
 }
 
 async function callUnload() {
     const timestreamDependencyHelper = new TimestreamDependencyHelper(region);
     const account = await timestreamDependencyHelper.getAccount();
     const bucketName = constants.S3_BUCKET_PREFIX_UNLOAD + region + "-" + account;
-    const unloadExample = new UnloadExample(writeClient, queryClient, timestreamDependencyHelper, csvFilePath, bucketName);
+    const unloadExample = new Unload(writeClient, queryClient, timestreamDependencyHelper, csvFilePath, bucketName);
     
     await createResources();
     await unloadExample.run();
@@ -99,8 +99,6 @@ async function callUnload() {
 
 async function cleanup() {
     await resources.deleteTable(writeClient, constants.DATABASE_NAME, constants.TABLE_NAME);
-    await resources.deleteTable(writeClient, constants.DATABASE_NAME, constants.PARTITION_KEY_DIMENSION_TABLE_NAME);
-    await resources.deleteTable(writeClient, constants.DATABASE_NAME, constants.PARTITION_KEY_MEASURE_TABLE_NAME);
     await resources.deleteDatabase(writeClient);
 }
 
