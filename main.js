@@ -1,8 +1,8 @@
 import { TimestreamWriteClient } from "@aws-sdk/client-timestream-write";
 import { TimestreamQueryClient } from "@aws-sdk/client-timestream-query";
 import { TimestreamDependencyHelper } from "./utils/timestream-dependency-helper.js";
-import * as crudAndSimpleIngestionExample from "./crud-and-simple-ingestion-example.js";
-import * as queryExample from "./query-example.js";
+import * as resources from "./resources.js";
+import * as queryExample from "./query.js";
 import * as csvIngest from "./insert-csv.js";
 import https from 'https';
 import minimist from 'minimist';
@@ -56,14 +56,14 @@ const queryClient = new TimestreamQueryClient({
 });
 
 async function createResources() {
-    await crudAndSimpleIngestionExample.createDatabase(writeClient);
+    await resources.createDatabase(writeClient);
     // await crudAndSimpleIngestionExample.describeDatabase(writeClient);
     // await crudAndSimpleIngestionExample.updateDatabase(argv.kmsKeyId, writeClient);
-    await crudAndSimpleIngestionExample.listDatabases(writeClient);
-    await crudAndSimpleIngestionExample.createTable(writeClient);
+    await resources.listDatabases(writeClient);
+    // await resources.createTable(writeClient);
     // await crudAndSimpleIngestionExample.describeTable(writeClient);
     // await crudAndSimpleIngestionExample.updateTable(writeClient);
-    // await crudAndSimpleIngestionExample.listTables(writeClient);
+    await resources.listTables(writeClient);
 }
 
 async function callServices() {
@@ -98,10 +98,10 @@ async function callUnload() {
 }
 
 async function cleanup() {
-    await crudAndSimpleIngestionExample.deleteTable(writeClient, constants.DATABASE_NAME, constants.TABLE_NAME);
-    await crudAndSimpleIngestionExample.deleteTable(writeClient, constants.DATABASE_NAME, constants.PARTITION_KEY_DIMENSION_TABLE_NAME);
-    await crudAndSimpleIngestionExample.deleteTable(writeClient, constants.DATABASE_NAME, constants.PARTITION_KEY_MEASURE_TABLE_NAME);
-    await crudAndSimpleIngestionExample.deleteDatabase(writeClient);
+    await resources.deleteTable(writeClient, constants.DATABASE_NAME, constants.TABLE_NAME);
+    await resources.deleteTable(writeClient, constants.DATABASE_NAME, constants.PARTITION_KEY_DIMENSION_TABLE_NAME);
+    await resources.deleteTable(writeClient, constants.DATABASE_NAME, constants.PARTITION_KEY_MEASURE_TABLE_NAME);
+    await resources.deleteDatabase(writeClient);
 }
 
 switch (type) {
