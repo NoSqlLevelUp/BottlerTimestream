@@ -13,17 +13,16 @@ import { config } from "dotenv";
 config()
 
 const appType = {
-    Basic: "basic",
+    Create: "create",
     Unload: "unload",
     Cleanup: "cleanup",
-    CompositePartitionKey: "compositePartitionKey",
 }
 
 const argv = minimist(process.argv.slice(2), {
     boolean: "skipDeletion"
 });
 
-const type = argv.type ?? appType.Basic;
+const type = argv.type;
 const region =  "eu-west-1";
 const skipDeletion = argv.skipDeletion ?? true;
 const csvFilePath = argv.csvFilePath ?? null;
@@ -57,12 +56,9 @@ const queryClient = new TimestreamQueryClient({
 
 async function createResources() {
     await resources.createDatabase(writeClient);
-    // await crudAndSimpleIngestionExample.describeDatabase(writeClient);
-    // await crudAndSimpleIngestionExample.updateDatabase(argv.kmsKeyId, writeClient);
     await resources.listDatabases(writeClient);
+    await resources.deleteTable(writeClient, constants.DATABASE_NAME, constants.TABLE_NAME);
     await resources.createTable(writeClient);
-    // await crudAndSimpleIngestionExample.describeTable(writeClient);
-    // await crudAndSimpleIngestionExample.updateTable(writeClient);
     await resources.listTables(writeClient);
 }
 
@@ -73,28 +69,12 @@ async function callServices() {
         await csvIngest.processCSV(writeClient, csvFilePath);
     }
     await queryExample.runAllQueries(queryClient);
-
-    //Try cancelling a query
-    //This could fail if there is no data in the table, and the example query has finished before it was cancelled.
-    // await queryExample.tryCancelQuery(queryClient);
-
-    // Try a query with multiple pages
-    // await queryExample.tryQueryWithMultiplePages(queryClient, 20000);
 }
 
 async function callUnload() {
     const timestreamDependencyHelper = new TimestreamDependencyHelper(region);
-    const account = await timestreamDependencyHelper.getAccount();
-    const bucketName = constants.S3_BUCKET_PREFIX_UNLOAD + region + "-" + account;
-    const unloadExample = new Unload(writeClient, queryClient, timestreamDependencyHelper, csvFilePath, bucketName);
-    
-    await createResources();
+    const unloadExample = new Unload(writeClient, queryClient, timestreamDependencyHelper, constants.S3_BUCKET_UNLOAD);
     await unloadExample.run();
-
-    if (!skipDeletion) {
-        await timestreamDependencyHelper.deleteS3Bucket(bucketName);
-        await cleanup();
-    }
 }
 
 async function cleanup() {
@@ -103,7 +83,7 @@ async function cleanup() {
 }
 
 switch (type) {
-    case appType.Basic:
+    case appType.Create:
         callServices();
         break;
     case appType.Unload:
@@ -112,4 +92,9 @@ switch (type) {
     case appType.Cleanup:
         cleanup();
         break;
+    default:
+        await resources.listDatabases(writeClient);
+        await resources.listTables(writeClient);
 }
+
+callUnload()

@@ -6,27 +6,12 @@ export class UnloadUtils {
         this.queryClient = queryClient;
         this.timestreamDependencyHelper = timestreamDependencyHelper;
 
-        let QUERY_1 = "SELECT user_id, ip_address, event, session_id, measure_name, time, query, quantity, product_id, channel FROM "
+        let QUERY_1 = "SELECT * FROM "
         QUERY_1 = QUERY_1 + constants.DATABASE_NAME + "." + constants.TABLE_NAME
         QUERY_1 = QUERY_1 + " WHERE time BETWEEN ago(2d) AND now()"
 
-        const UNLOAD_QUERY_1 = new UnloadQuery(QUERY_1, exported_bucket_name, "withoutparittion", "CSV", "GZIP", "")
-
-        const UNLOAD_QUERY_2 = new UnloadQuery(QUERY_1, exported_bucket_name, "partitionbychannel", "CSV", "GZIP", ['channel'])
-
-        // Partitioning data by event
-        let QUERY_3 = "SELECT user_id, ip_address, channel, session_id, measure_name, time, query, quantity, product_id, event FROM "
-        QUERY_3 = QUERY_3 + constants.DATABASE_NAME + "." + constants.TABLE_NAME
-        QUERY_3 = QUERY_3 + " WHERE time BETWEEN ago(2d) AND now()"
-        const UNLOAD_QUERY_3 = new UnloadQuery(QUERY_3, exported_bucket_name, "partitionbyevent", "CSV", "GZIP", ['event'])
-
-        // Partitioning data by channel and event
-        let QUERY_4 = "SELECT user_id, ip_address, session_id, measure_name, time, query, quantity, product_id, channel,event FROM ";
-        QUERY_4 = QUERY_4 + constants.DATABASE_NAME + "." + constants.TABLE_NAME;
-        QUERY_4 = QUERY_4 + " WHERE time BETWEEN ago(2d) AND now()";
-        const UNLOAD_QUERY_4 = new UnloadQuery(QUERY_4, exported_bucket_name, "partitionbychannelandevent", "CSV", "GZIP", ['channel', 'event']);
-
-        this.queries = [UNLOAD_QUERY_1, UNLOAD_QUERY_2, UNLOAD_QUERY_3, UNLOAD_QUERY_4]
+        const UNLOAD_QUERY_1 = new UnloadQuery(QUERY_1, exported_bucket_name, constants.TABLE_NAME, "CSV", "GZIP", "")
+        this.queries = [UNLOAD_QUERY_1 ]
     }
 
     async runQueries() {
@@ -36,7 +21,7 @@ export class UnloadUtils {
         console.log("Query execution complete!")
     }
 
-    async runSingleQuery(queryId = 1) {
+    async runSingleQuery(queryId = 0) {
         const query = this.queries[queryId];
         await this.runQuery(query, queryId);
     }

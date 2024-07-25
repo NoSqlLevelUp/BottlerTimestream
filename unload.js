@@ -5,13 +5,8 @@ import {constants} from "./constants.js";
 import {UnloadUtils} from "./utils/unload-utils.js";
 
 export class Unload {
-    constructor(writeClient, queryClient, timestreamDependencyHelper, csvFilePath, bucketName) {
-        if (!csvFilePath) {
-            console.error("CSV file path is required to run unload.")
-            return
-        }
+    constructor(writeClient, queryClient, timestreamDependencyHelper, bucketName) {
         this.writeClient = writeClient;
-        this.csvFilePath = csvFilePath;
         this.timestreamDependencyHelper = timestreamDependencyHelper;
         this.bucketName = bucketName;
         this.unloadUtils = new UnloadUtils(queryClient, this.timestreamDependencyHelper, bucketName);
@@ -151,8 +146,6 @@ export class Unload {
 
     async run() {
         try {
-            await this.createBucket();
-            await this.bulkWriteShoppingRecords();
             await this.unloadUtils.runSingleQuery();
         } catch (e) {
             console.error(e);

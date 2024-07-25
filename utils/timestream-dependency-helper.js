@@ -15,7 +15,10 @@ import csvParser from "csv-parser";
 
 export class TimestreamDependencyHelper {
     constructor(region) {
-        this.s3Client = new S3Client({region: region});
+        this.s3Client = new S3Client({region: region, credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+        }});
         this.stsClient = new STSClient();
     }
 

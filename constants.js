@@ -4,6 +4,5 @@ export const constants = {
     TABLE_NAME: 'FactoryData',
     HT_TTL_HOURS: 24,
     CT_TTL_DAYS: 7,
-    S3_BUCKET_PREFIX_UNLOAD: "timestream-sample-",
-    S3_BUCKET_PREFIX_CPK: "error-configuration-sample-s3-bucket-",
+    S3_BUCKET_UNLOAD: "db-data-unload"
 }
