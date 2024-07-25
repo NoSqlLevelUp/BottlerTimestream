@@ -17,23 +17,19 @@ This sample application shows how you can create a database and table, populate 
    ```shell
    node main.js
    ```
-4. UpdateDatabase will be skipped unless --kmsKeyId flag is given
-    ```shell
-    node main.js --kmsKeyId=updatedKmsKeyId
-    ```
-5. Run the sample application with sample data by adding --csvFilePath flag
+4. Run the sample application with sample data by adding --csvFilePath flag
    ```shell
    node main.js --csvFilePath=../data/sample.csv
    ``` 
-6. Run sample application to remove table and database created
+5. Run sample application to remove table and database created
    ```shell
    node main.js --type cleanup
    ```
-7. Run sample application to execute Unload queries
+6. Run sample application to execute Unload queries
    ```shell
    node main.js --type unload --csvFilePath=../data/sample_unload.csv
    ```
-8. Run sample application with composite partition key
+7. Run sample application with composite partition key
    ```shell
    node main.js --type compositePartitionKey
    ```
